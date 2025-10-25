@@ -20,8 +20,18 @@ def agregar_primer_producto(driver):
     Agrega el primer producto de la lista al carrito.
     """
     wait = WebDriverWait(driver, 10)
-    productos = wait.until(EC.visibility_of_all_elements_located((By.CLASS_NAME, "inventory_item")))
-    productos[0].find_element(By.TAG_NAME, "button").click()
+
+    botones_carrito = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "btn_inventory")))
+    if not botones_carrito:
+        raise Exception(" No se encontraron botones 'Add to cart'.")
+
+    boton_carrito = botones_carrito[0]
+    print(f"🖱️ Clic en botón: {boton_carrito.text}")
+    boton_carrito.click()
+
+    # Esperar a que cambie el texto del botón a "Remove" (indica que se agregó)
+    wait.until(EC.text_to_be_present_in_element((By.CLASS_NAME, "btn_inventory"), "Remove"))
+    print(" Producto agregado correctamente al carrito.")
 
 def obtener_contador_carrito(driver):
     """

@@ -13,6 +13,7 @@ Criterios mínimos:
 """
 
 import pytest
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -36,29 +37,31 @@ def test_verificar_titulo_y_elementos(driver):
     """
     # Paso 1: Login
     login(driver)
+    time.sleep(2)
 
     # Paso 2: Espera explícita a que se cargue la página de inventario
     wait = WebDriverWait(driver, 10)
     wait.until(EC.url_contains("/inventory.html"))
+    time.sleep(2)
 
     # Paso 3: Validar título
     header_title = driver.find_element(By.CLASS_NAME, "title").text
     app_logo = driver.find_element(By.CLASS_NAME, "app_logo").text
     assert (app_logo == "Swag Labs") or ("Products" in header_title), \
-        f"❌ Título inesperado. app_logo='{app_logo}', header='{header_title}'"
+        f" Título inesperado. app_logo='{app_logo}', header='{header_title}'"
 
     # Paso 4: Validar que haya al menos un producto visible
     productos = driver.find_elements(By.CLASS_NAME, "inventory_item")
-    assert len(productos) >= 1, "❌ No se encontró ningún producto visible en el catálogo."
-    print(f"✅ Se encontraron {len(productos)} productos visibles en la página.")
+    assert len(productos) >= 1, " No se encontró ningún producto visible en el catálogo."
+    print(f" Se encontraron {len(productos)} productos visibles en la página.")
 
     # Paso 5: Validar elementos importantes de la interfaz
     # Menú de hamburguesa
     menu_button = driver.find_element(By.ID, "react-burger-menu-btn")
-    assert menu_button.is_displayed(), "❌ Botón de menú no visible."
+    assert menu_button.is_displayed(), " Botón de menú no visible."
 
     # Filtro de productos
     filter_dropdown = driver.find_element(By.CLASS_NAME, "product_sort_container")
-    assert filter_dropdown.is_displayed(), "❌ Filtro de productos no visible."
+    assert filter_dropdown.is_displayed(), " Filtro de productos no visible."
 
-    print("✅ Elementos clave de la interfaz presentes y visibles.")
+    print("Elementos clave de la interfaz presentes y visibles.")

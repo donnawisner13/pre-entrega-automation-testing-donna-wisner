@@ -5,6 +5,7 @@ Validar login exitoso verificando que se haya redirigido a la página de inventa
 """
 
 import pytest
+import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,10 +28,12 @@ def test_login_exitoso(driver):
     """
     # Paso 1: Ingresar al sitio y hacer login usando la función auxiliar
     login(driver)
+    time.sleep(2)
 
     # Paso 2: Espera explícita a que la URL cambie a /inventory.html
     wait = WebDriverWait(driver, 10)
     wait.until(EC.url_contains("/inventory.html"))
+    time.sleep(3) 
 
     # Paso 3: Validar URL
     assert "/inventory.html" in driver.current_url, "❌ No se redirigió correctamente a /inventory.html"
@@ -42,3 +45,4 @@ def test_login_exitoso(driver):
         f"❌ Título inesperado. app_logo='{app_logo}', header='{header_title}'"
 
     print("✅ Test Login OK")
+    time.sleep(2)
