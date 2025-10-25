@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from utils.driver_setup import create_driver_simple
+from utils.driver_setup import create_driver
 from utils.funciones_auxiliares import login, agregar_primer_producto, obtener_contador_carrito
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def driver():
     """
     Fixture de Pytest que crea y cierra el navegador automáticamente.
     """
-    driver = create_driver_simple()
+    driver = create_driver()
     yield driver
     driver.quit()
 
