@@ -1,0 +1,13 @@
+# Archivos y carpetas generados automáticamente 
+*.pyc
+
+# Cache de pytest
+.pytest_cache/
+
+# Reportes y screenshots generados en las pruebas
+reports/
+screenshots/
+
+# Entornos virtuales (por las dudas)
+venv/
+.env/
