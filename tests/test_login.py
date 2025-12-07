@@ -1,48 +1,65 @@
-"""
-Navegar a la página de login de saucedemo.com
-Ingresar credenciales válidas (usuario: "standard_user", contraseña: "secret_sauce")
-Validar login exitoso verificando que se haya redirigido a la página de inventario
-"""
-
-import pytest
-import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from utils.driver_setup import create_driver
-from utils.funciones_auxiliares import login
+class LoginPage:
+    # URL de la página de login
+    URL = "https://www.saucedemo.com/"
 
-@pytest.fixture
-def driver():
-    """
-    Fixture de Pytest que crea y cierra el navegador automáticamente.
-    """
-    driver = create_driver()
-    yield driver
-    driver.quit()
+    # Locators (selectores de elementos)
+    _USER_INPUT = (By.ID, "user-name")
+    _PASS_INPUT = (By.ID, "password")
+    _LOGIN_BUTTON = (By.ID, "login-button")
+    _ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
 
-def test_login_exitoso(driver):
-    """
-    Test que valida que el login se realice correctamente.
-    """
-    # Paso 1: Ingresar al sitio y hacer login usando la función auxiliar
-    login(driver)
-    time.sleep(2)
-
-    # Paso 2: Espera explícita a que la URL cambie a /inventory.html
-    wait = WebDriverWait(driver, 10)
-    wait.until(EC.url_contains("/inventory.html"))
-    time.sleep(3) 
-
-    # Paso 3: Validar URL
-    assert "/inventory.html" in driver.current_url, "❌ No se redirigió correctamente a /inventory.html"
-
-    # Paso 4: Validar título “Products” o “Swag Labs”
-    app_logo = driver.find_element(By.CLASS_NAME, "app_logo").text
-    header_title = driver.find_element(By.CLASS_NAME, "title").text
-    assert (app_logo == "Swag Labs") or ("Products" in header_title), \
-        f"❌ Título inesperado. app_logo='{app_logo}', header='{header_title}'"
-
-    print("✅ Test Login OK")
-    time.sleep(2)
+    def __init__(self, driver):
+        """
+        Constructor que recibe la instancia del WebDriver
+        """
+        self.driver = driver
+        self.wait = WebDriverWait(driver, 10)
+    
+    def abrir(self):
+        """Navegar a la página de login"""
+        self.driver.get(self.URL)
+        return self
+    
+    def completar_usuario(self, usuario):
+        """Escribir el nombre de usuario"""
+        campo = self.wait.until(EC.visibility_of_element_located(self._USER_INPUT))
+        campo.clear()
+        campo.send_keys(usuario)
+        return self
+    
+    def completar_clave(self, clave):
+        """Escribir la contraseña"""
+        campo = self.driver.find_element(*self._PASS_INPUT)
+        campo.clear()
+        campo.send_keys(clave)
+        return self
+    
+    def enviar(self):
+        """Hacer clic en el botón de login"""
+        self.driver.find_element(*self._LOGIN_BUTTON).click()
+        return self
+    
+    def login_completo(self, usuario, clave):
+        """Método de conveniencia para hacer login completo"""
+        self.completar_usuario(usuario)
+        self.completar_clave(clave)
+        self.enviar()
+        return self
+    
+    def hay_error(self):
+        """Verificar si hay un mensaje de error visible"""
+        try: 
+            self.wait.until(EC.visibility_of_element_located(self._ERROR_MESSAGE))
+            return True
+        except:
+            return False
+    
+    def obtener_mensaje_error(self):
+        """Obtener el texto del mensaje de error"""
+        if self.hay_error():
+            return self.driver.find_element(*self._ERROR_MESSAGE).text
+        return ""
