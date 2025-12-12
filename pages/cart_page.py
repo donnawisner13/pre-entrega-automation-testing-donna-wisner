@@ -30,7 +30,7 @@ class CartPage:
         return InventoryPage(self.driver)
 
     def proceder_checkout(self):
-        """Inicia el proceso de checkout."""
+        """Inicia el proceso de checkout y devuelve la página de Checkout."""
         self.driver.find_element(*self._CHECKOUT_BUTTON).click()
-        # Aquí podrías devolver CheckoutPage cuando la implementes
-        return self
+        from pages.checkout_page import CheckoutPage
+        return CheckoutPage(self.driver)

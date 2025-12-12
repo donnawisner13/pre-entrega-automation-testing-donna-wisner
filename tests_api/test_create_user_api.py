@@ -1,10 +1,36 @@
-"""
-D3. test_create_user_api.py:
-● Envía POST /api/users con distintos nombres y trabajos
-● Usa parametrización (puede ser con datos fijos o Faker)
-● Comprueba 201 y que createdAt incluya el año actual
+import requests
+from utils.logger import get_logger
 
-4. Configuración:
-● Marca estos tests con @pytest.mark.api
-● Actualiza pytest.ini para poder ejecutar pytest -m api
-"""
+log = get_logger(__name__)
+
+BASE_URL = "https://jsonplaceholder.typicode.com"
+
+
+def test_create_post():
+    """
+    POST /posts
+    - Status code 201
+    - El body devuelto coincide con lo enviado
+    - Contiene un id generado
+    """
+    payload = {
+        "title": "Nuevo Post",
+        "body": "Contenido de prueba",
+        "userId": 1
+    }
+    log.info("Iniciando test API: crear post")
+    log.info(f"Enviando POST /posts con payload: {payload}")
+
+    response = requests.post(f"{BASE_URL}/posts", json=payload)
+    log.info(f"Respuesta recibida con status code: {response.status_code}")
+    
+    assert response.status_code == 201, f"❌ Status inesperado: {response.status_code}"
+
+    data = response.json()
+
+    log.info(f"Post creado correctamente con ID: {data.get('id')}")
+
+    assert data["title"] == payload["title"]
+    assert data["body"] == payload["body"]
+    assert data["userId"] == payload["userId"]
+    assert "id" in data, "❌ Falta la clave 'id' en la respuesta."

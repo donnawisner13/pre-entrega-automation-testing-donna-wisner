@@ -1,10 +1,4 @@
 """
-Verificar que el título de la página de inventario sea correcto
-Comprobar que existan productos visibles en la página (al menos verificar la presencia de uno)
-Validar que elementos importantes de la interfaz estén presentes (menú, filtros, etc.)
-"""
-
-"""
 Pruebas de navegación y verificación del catálogo en saucedemo.com.
 Criterios mínimos:
 - Validar título de inventario.
@@ -15,11 +9,9 @@ Criterios mínimos:
 import pytest
 import time
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 from utils.driver_setup import create_driver
-from utils.funciones_auxiliares import login
+from pages.login_page import LoginPage
+from pages.inventory_page import InventoryPage
 
 @pytest.fixture
 def driver():
@@ -32,36 +24,33 @@ def driver():
 
 def test_verificar_titulo_y_elementos(driver):
     """
-    Verifica que el título de la página sea correcto
-    y que los elementos clave del catálogo estén presentes.
+    Verifica que el título, la presencia de productos
+    y los elementos clave del catálogo usando Page Objects.
     """
-    # Paso 1: Login
-    login(driver)
-    time.sleep(2)
+    # Paso 1: Login usando LoginPage
+    login_page = LoginPage(driver)
+    login_page.abrir().login_completo("standard_user", "secret_sauce")
+    time.sleep(1)
 
-    # Paso 2: Espera explícita a que se cargue la página de inventario
-    wait = WebDriverWait(driver, 10)
-    wait.until(EC.url_contains("/inventory.html"))
-    time.sleep(2)
+    # Paso 2: Crear InventoryPage
+    inventory_page = InventoryPage(driver)
 
     # Paso 3: Validar título
-    header_title = driver.find_element(By.CLASS_NAME, "title").text
-    app_logo = driver.find_element(By.CLASS_NAME, "app_logo").text
-    assert (app_logo == "Swag Labs") or ("Products" in header_title), \
-        f" Título inesperado. app_logo='{app_logo}', header='{header_title}'"
+    titulo = inventory_page.obtener_titulo()
+    assert titulo in ["Products", "Swag Labs"], f"Título inesperado: {titulo}"
+    print(f"✅ Título correcto: {titulo}")
 
     # Paso 4: Validar que haya al menos un producto visible
-    productos = driver.find_elements(By.CLASS_NAME, "inventory_item")
-    assert len(productos) >= 1, " No se encontró ningún producto visible en el catálogo."
-    print(f" Se encontraron {len(productos)} productos visibles en la página.")
+    productos = inventory_page.obtener_productos()
+    assert len(productos) >= 1, "❌ No se encontró ningún producto visible en el catálogo."
+    print(f"🛒 Se encontraron {len(productos)} productos visibles.")
 
     # Paso 5: Validar elementos importantes de la interfaz
-    # Menú de hamburguesa
-    menu_button = driver.find_element(By.ID, "react-burger-menu-btn")
-    assert menu_button.is_displayed(), " Botón de menú no visible."
+    menu_button = driver.find_element(*InventoryPage._MENU_BUTTON)
+    assert menu_button.is_displayed(), "❌ Botón de menú no visible."
 
-    # Filtro de productos
     filter_dropdown = driver.find_element(By.CLASS_NAME, "product_sort_container")
-    assert filter_dropdown.is_displayed(), " Filtro de productos no visible."
+    assert filter_dropdown.is_displayed(), "❌ Filtro de productos no visible."
 
-    print("Elementos clave de la interfaz presentes y visibles.")
+    print("✅ Elementos clave de la interfaz presentes y visibles.")
+    time.sleep(1)

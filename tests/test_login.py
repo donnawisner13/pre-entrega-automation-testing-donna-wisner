@@ -10,7 +10,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utils.driver_setup import create_driver
-from utils.funciones_auxiliares import login
+from pages.login_page import LoginPage
+
+from utils.logger import get_logger
+log = get_logger(__name__)
 
 @pytest.fixture
 def driver():
@@ -23,25 +26,30 @@ def driver():
 
 def test_login_exitoso(driver):
     """
-    Test que valida que el login se realice correctamente.
+    Test que valida que el login se realice correctamente usando Page Object.
     """
-    # Paso 1: Ingresar al sitio y hacer login usando la función auxiliar
-    login(driver)
-    time.sleep(2)
+    log.info("Iniciando test de login")
+    # Crear la página de login con el driver
+    login_page = LoginPage(driver)
 
-    # Paso 2: Espera explícita a que la URL cambie a /inventory.html
+    # Abrir la página y hacer login completo
+    login_page.abrir().login_completo("standard_user", "secret_sauce")
+    time.sleep(2)
+    log.info("Login realizado, validando inventario")
+    
+    # Espera explícita a que la URL cambie a /inventory.html
     wait = WebDriverWait(driver, 10)
     wait.until(EC.url_contains("/inventory.html"))
-    time.sleep(3) 
+    time.sleep(1)
 
-    # Paso 3: Validar URL
-    assert "/inventory.html" in driver.current_url, "❌ No se redirigió correctamente a /inventory.html"
+    # Validar URL
+    assert  "/inventory.html" in driver.current_url, "❌ No se redirigió correctamente a /inventory.html"
 
-    # Paso 4: Validar título “Products” o “Swag Labs”
+    # Validar título “Products” o “Swag Labs”
     app_logo = driver.find_element(By.CLASS_NAME, "app_logo").text
     header_title = driver.find_element(By.CLASS_NAME, "title").text
     assert (app_logo == "Swag Labs") or ("Products" in header_title), \
         f"❌ Título inesperado. app_logo='{app_logo}', header='{header_title}'"
 
-    print("✅ Test Login OK")
-    time.sleep(2)
+    print("✅ Test Login OK (POM)")
+    time.sleep(1)
