@@ -10,7 +10,7 @@ import time
 from utils.driver_setup import create_driver
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
-
+pytestmark = pytest.mark.ui
 @pytest.fixture
 def driver():
     """

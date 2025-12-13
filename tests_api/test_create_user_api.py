@@ -1,8 +1,9 @@
 import requests
+import pytest
 from utils.logger import get_logger
 
 log = get_logger(__name__)
-
+pytestmark = pytest.mark.api
 BASE_URL = "https://jsonplaceholder.typicode.com"
 
 

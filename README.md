@@ -1,22 +1,34 @@
-# Proyecto de Automatización de Pruebas - Preentrega
+# Proyecto de Automatización de Pruebas - Final
 
 ## Propósito del proyecto
-Este proyecto tiene como objetivo automatizar pruebas funcionales en el sitio [SauceDemo](https://www.saucedemo.com/), utilizando **Selenium WebDriver** y **Pytest** como framework de testing.  
-Permite validar el correcto funcionamiento de los siguientes flujos de usuario:
-- Inicio de sesión
-- Navegación y visualización del catálogo de productos
-- Agregado de productos al carrito de compras
 
+## Propósito del proyecto
+El objetivo es desarrollar un framework de automatización que permita validar funcionalidades tanto de **interfaz de usuario (UI)** como de **API**.
 ---
 
 ##  Tecnologías utilizadas
-- Python 3.13
-- Selenium WebDriver → automatización del navegador
-- Pytest → ejecución de casos de prueba
-- Pytest-HTML → generación de reportes en formato HTML
-- WebDriver Manager → gestión automática del driver de Chrome
-
+- **Python 3.13**
+- **Pytest** → framework de testing
+- **Selenium WebDriver** → automatización de interfaz web
+- **Requests** → pruebas de API
+- **Pytest-HTML** → generación de reportes HTML
+- **Logging** → registro de la ejecución de las pruebas
+- **WebDriver Manager** → gestión automática del driver del navegador
+- **Git / GitHub** → control de versiones
 ---
+##  Flujos cubiertos
+
+UI:
+- Login exitoso y parametrizado (incluye caso negativo)
+- Navegación del catálogo
+- Agregado de productos al carrito
+- Checkout completo
+- Logout
+
+API:
+- **GET** → obtener recursos
+- **POST** → crear recursos
+- **DELETE** → eliminación de recursos
 
 ##  Instrucciones de instalación
 
@@ -35,19 +47,30 @@ Permite validar el correcto funcionamiento de los siguientes flujos de usuario:
 
 ## Estructura básica del proyecto
 
-Preentrega/
+Entrega_Final/
 │
-├── reports/
-│   └── reporte.html
+├── pages/          # Page Objects (UI)
+├── tests/          # Tests de UI
+├── tests_api/      # Tests de API
+├── utils/          # Utilidades (driver, logging, carga de datos)
+├── datos/          # Datos externos (CSV / JSON)
+├── reports/        # Reportes HTML y screenshots
+├── logs/           # Logs de ejecución
 │
-├── tests/
-│   ├── test_carrito.py
-│   ├── test_login.py
-│   └── test_nav_catalogo.py
-│
-├── utils/
-│   ├── driver_setup.py
-│   └── funciones_auxiliares.py
-│
-├── README.md
-└── run_tests.py
+├── conftest.py
+├── pytest.ini
+├── run_tests.py
+└── README.md
+
+## Reportes
+Las ejecuciones generan un reporte HTML automático que incluye:
+- listado de tests ejecutados
+- estado (passed / failed)
+- duración
+- capturas de pantalla en caso de fallos de UI
+
+El reporte se guarda en reports/report.html
+
+## Logging
+Se implementó un sistema de logging que registra pasos clave durante la ejecución de las pruebas.
+Se guardan en logs/suite.logs

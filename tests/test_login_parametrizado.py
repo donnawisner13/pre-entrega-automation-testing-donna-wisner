@@ -4,7 +4,7 @@ import time
 from utils.driver_setup import create_driver
 from utils.data_loader import leer_datos_login_desde_csv
 from pages.login_page import LoginPage
-
+pytestmark = pytest.mark.ui
 
 @pytest.fixture
 def driver():

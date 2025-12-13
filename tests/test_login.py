@@ -15,6 +15,8 @@ from pages.login_page import LoginPage
 from utils.logger import get_logger
 log = get_logger(__name__)
 
+pytestmark = pytest.mark.ui
+
 @pytest.fixture
 def driver():
     """
@@ -24,6 +26,7 @@ def driver():
     yield driver
     driver.quit()
 
+@pytest.mark.smoke
 def test_login_exitoso(driver):
     """
     Test que valida que el login se realice correctamente usando Page Object.

@@ -1,20 +1,39 @@
 """
-Script para ejecutar todos los tests de preentrega usando Pytest.
-Genera un reporte HTML en la carpeta reports/.
+Script auxiliar para ejecutar tests usando pytest y markers.
+
+Uso:
+  python run_tests.py ui
+  python run_tests.py api
+  python run_tests.py all
+  python run_tests.py        (por defecto: all)
+
+Notas:
+- El reporte HTML y las opciones de pytest se configuran en pytest.ini
+- Este script solo decide qué tests correr según el marker
 """
 
+import sys
 import pytest
-import os
 
-# Carpeta donde están los tests
-tests_path = "tests"
+# Mapa entre argumento y expresión de markers
+MARKS = {
+    "ui": "ui",
+    "api": "api",
+    "all": "ui or api",
+}
 
-# Carpeta para guardar reportes
-reports_path = "reports"
-os.makedirs(reports_path, exist_ok=True)  # crea la carpeta si no existe
+def main() -> int:
+    # Si no se pasa argumento, se corre todo
+    modo = sys.argv[1].lower() if len(sys.argv) > 1 else "all"
 
-# Archivo de reporte HTML
-reporte_html = os.path.join(reports_path, "reporte.html")
+    if modo not in MARKS:
+        print("Uso: python run_tests.py [ui|api|all]")
+        return 2
 
-# Ejecuta todos los tests dentro de tests/ y genera reporte HTML
-pytest.main([tests_path, "-v", f"--html={reporte_html}", "--self-contained-html"])
+    mark_expr = MARKS[modo]
+
+    # Ejecuta pytest usando el marker elegido
+    return pytest.main(["-m", mark_expr, "-v"])
+
+if __name__ == "__main__":
+    raise SystemExit(main())
